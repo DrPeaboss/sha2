@@ -484,8 +484,6 @@ begin
       Sha2Update:=@Sha256Update;
     Sha384, Sha512, Sha512_224, Sha512_256:
       Sha2Update:=@Sha512Update;
-    else
-      Exit;
   end;
   Assign(F,FileName);
   Reset(F,1);
@@ -525,8 +523,6 @@ begin
       Sha2Update:=@Sha256Update;
     Sha384, Sha512, Sha512_224, Sha512_256:
       Sha2Update:=@Sha512Update;
-    else
-      Exit;
   end;
   Assign(F,FileName);
   Reset(F,1);
@@ -729,8 +725,8 @@ begin
   begin
     move(p^,Context.Buffer,128);
     Sha512Compress(Context);
-    Inc(p,64);
-    Dec(len,64);
+    Inc(p,128);
+    Dec(len,128);
   end;
   if len>0 then
   begin
