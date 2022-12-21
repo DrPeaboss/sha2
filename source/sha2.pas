@@ -479,12 +479,9 @@ var
 begin
   Result:=Default(TSha2Digest);
   ReadCount:=0;
-  case version of
-    Sha224, Sha256:
-      Sha2Update:=@Sha256Update;
-    Sha384, Sha512, Sha512_224, Sha512_256:
-      Sha2Update:=@Sha512Update;
-  end;
+  Sha2Update:=@Sha256Update;
+  if version in [Sha384, Sha512, Sha512_224, Sha512_256] then
+    Sha2Update:=@Sha512Update;
   Assign(F,FileName);
   Reset(F,1);
   fm:=FileMode;
@@ -518,12 +515,9 @@ var
 begin
   Result:=Default(TSha2Digest);
   ReadCount:=0;
-  case version of
-    Sha224, Sha256:
-      Sha2Update:=@Sha256Update;
-    Sha384, Sha512, Sha512_224, Sha512_256:
-      Sha2Update:=@Sha512Update;
-  end;
+  Sha2Update:=@Sha256Update;
+  if version in [Sha384, Sha512, Sha512_224, Sha512_256] then
+    Sha2Update:=@Sha512Update;
   Assign(F,FileName);
   Reset(F,1);
   fm:=FileMode;
