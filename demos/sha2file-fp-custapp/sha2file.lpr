@@ -35,12 +35,12 @@ function Sha2VersionToString(v:TSha2Version):String;
 begin
   Result:='';
   case v of
-    Sha224: Result:='Sha224';
-    Sha256: Result:='Sha256';
-    Sha384: Result:='Sha384';
-    Sha512: Result:='Sha512';
-    Sha512_224: Result:='Sha512/224';
-    Sha512_256: Result:='Sha512/256';
+    Sha224: Result:='SHA224';
+    Sha256: Result:='SHA256';
+    Sha384: Result:='SHA384';
+    Sha512: Result:='SHA512';
+    Sha512_224: Result:='SHA512/224';
+    Sha512_256: Result:='SHA512/256';
   end;
 end;
 
@@ -50,19 +50,24 @@ procedure TSHA2File.DoSha2;
 const
   BufSize = 1024000;
 var
-  ctx:array[Sha224..Sha512_256] of TSha2Context;
+  ctx:array of TSha2Context;        
   digest:TSha2Digest;
   FHandle:THandle;
   buf:Pointer;
-  len:Integer;
+  len,i:Integer;
   flag:TSha2Version;
   ReadSize,TotalSize:Int64;
   Q:Boolean;
 begin
-  ctx[Sha224]:=Default(TSha2Context); // make the compiler shut up
+  ctx:=[];
   Q:=HasOption('q','quiet');
+  len:=0;
   for flag in FFlags do
-    Sha2Init(ctx[flag],flag);
+  begin
+    SetLength(ctx,len+1);
+    Sha2Init(ctx[len],flag);
+    Inc(len);
+  end;
   FHandle:=FileOpen(FFileName,fmShareDenyNone);
   GetMem(buf,BufSize);
   TotalSize:=FileSeek(FHandle,Int64(0),fsFromEnd);
@@ -73,17 +78,17 @@ begin
     if len>0 then
     begin
       ReadSize:=ReadSize+len;
-      for flag in FFlags do
-        Sha2Update(ctx[flag],buf^,len,flag);
+      for i:=0 to Length(ctx)-1 do
+        Sha2Update(ctx[i],buf^,len);
       if not Q then
         Write('Please wait [',ReadSize/TotalSize*100:2:2,'%] ...'#13);
     end;
   until len<BufSize;
 
-  for flag in FFlags do
+  for i:=0 to Length(ctx)-1 do
   begin
-    Sha2Final(ctx[flag],flag,digest);
-    Writeln(Sha2VersionToString(flag),': ',Sha2Print(digest,flag));
+    Sha2Final(ctx[i],digest);
+    Writeln(Sha2VersionToString(digest.Version),': ',Sha2Print(digest));
   end;
 
   Freemem(buf);
@@ -95,6 +100,7 @@ var
   ErrorMsg:String;
   NonOptions:TStringArray;
   NOLen:SizeInt;
+  t1,t2:TTimeStamp;
 begin
   ErrorMsg:=CheckOptions('hqas1234568',
     'help quiet sha224 sha256 sha384 sha512 sha512/224 sha512/256 all');
@@ -152,7 +158,11 @@ begin
     if not HasOption('q','quiet') and (FFlags * [sha384,sha512,sha512_224,sha512_256]<>[]) then
       Writeln('Hint: SHA512 is slow for sha2file, if you need, use sha2file64 instead');
 {$Endif}
+    t1:=DateTimeToTimeStamp(Now);
     DoSha2;
+    t2:=DateTimeToTimeStamp(Now);
+    if not HasOption('q','quiet') then
+      Writeln('Total use ',t2.Time-t1.Time,' ms');
     Terminate;
     Exit;
   end;

@@ -2,7 +2,7 @@
 // Sha256 i386 asm for optimization when compiler is not smart enough
 // Many things learned from gcc compiler
 {$ifdef FPC} {$WARN 7105 off, [esp-offset]} {$endif}
-procedure Sha256Compress(var Context:TSha256Context);assembler;
+procedure SHA256Compress(var Context:TSHA256Context);assembler;
 { [esp] = Pointer to Context
   [esp+4] to [esp+20] are local vars
   [esp+24] to [esp+280] are W array
