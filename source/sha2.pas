@@ -24,7 +24,6 @@
 unit sha2;
 
 // Sha512 is very slow for i386
-// Delphi is slower than FPC
 
 {$ifdef fpc}
   {$mode delphi}
@@ -45,7 +44,7 @@ type
   PtrUInt = NativeUInt;
 {$endif}
 
-  TSHA2Version  = (SHA224,SHA256,SHA384,SHA512,SHA512_224,SHA512_256);
+  TSHA2Version  = (SHA2_224,SHA2_256,SHA2_384,SHA2_512,SHA2_512_224,SHA2_512_256);
   TSHA2Versions = set of TSHA2Version;
 
   TSHA224Digest = array[0..27] of Byte;
@@ -113,8 +112,9 @@ type
     procedure Update(P:Pointer;Len:PtrUInt);overload;
     procedure Final(out Digest:TSHA2Digest);overload;
     function  Final:TSHA2Digest;overload;
-    class function HashBuffer(const Buf;Len:PtrUInt;Version:TSHA2Version):TSHA2Digest;overload;static;
-    class function HashString(const S:RawByteString;Version:TSHA2Version):TSHA2Digest;overload;static;
+    class function HashBuffer(const Buf;Len:PtrUInt;Version:TSHA2Version):TSHA2Digest;static;
+    class function HashString(const S:RawByteString;Version:TSHA2Version):TSHA2Digest;static;
+    class function HashFile(const FileName:String;Version:TSHA2Version):TSHA2Digest;static;
   end;
 
 
@@ -354,7 +354,7 @@ begin
   Context:=Default(TSHA2Context);
   Context.Version:=Version;
   case version of
-    SHA224: begin
+    SHA2_224: begin
       Context.Ctx256.H[0]:=$c1059ed8;
       Context.Ctx256.H[1]:=$367cd507;
       Context.Ctx256.H[2]:=$3070dd17;
@@ -364,7 +364,7 @@ begin
       Context.Ctx256.H[6]:=$64f98fa7;
       Context.Ctx256.H[7]:=$befa4fa4;
     end;
-    SHA256: begin
+    SHA2_256: begin
       Context.Ctx256.H[0]:=$6a09e667;
       Context.Ctx256.H[1]:=$bb67ae85;
       Context.Ctx256.H[2]:=$3c6ef372;
@@ -374,7 +374,7 @@ begin
       Context.Ctx256.H[6]:=$1f83d9ab;
       Context.Ctx256.H[7]:=$5be0cd19;
     end;
-    SHA384: begin
+    SHA2_384: begin
       Context.Ctx512.H[0]:=UInt64($cbbb9d5dc1059ed8);
       Context.Ctx512.H[1]:=UInt64($629a292a367cd507);
       Context.Ctx512.H[2]:=UInt64($9159015a3070dd17);
@@ -384,7 +384,7 @@ begin
       Context.Ctx512.H[6]:=UInt64($db0c2e0d64f98fa7);
       Context.Ctx512.H[7]:=UInt64($47b5481dbefa4fa4);
     end;
-    SHA512: begin
+    SHA2_512: begin
       Context.Ctx512.H[0]:=UInt64($6a09e667f3bcc908);
       Context.Ctx512.H[1]:=UInt64($bb67ae8584caa73b);
       Context.Ctx512.H[2]:=UInt64($3c6ef372fe94f82b);
@@ -394,7 +394,7 @@ begin
       Context.Ctx512.H[6]:=UInt64($1f83d9abfb41bd6b);
       Context.Ctx512.H[7]:=UInt64($5be0cd19137e2179);
     end;
-    SHA512_224: begin
+    SHA2_512_224: begin
       Context.Ctx512.H[0]:=UInt64($8c3d37c819544da2);
       Context.Ctx512.H[1]:=UInt64($73e1996689dcd4d6);
       Context.Ctx512.H[2]:=UInt64($1dfab7ae32ff9c82);
@@ -404,7 +404,7 @@ begin
       Context.Ctx512.H[6]:=UInt64($3f9d85a86a1d36c8);
       Context.Ctx512.H[7]:=UInt64($1112e6ad91d692a1);
     end;
-    SHA512_256: begin
+    SHA2_512_256: begin
       Context.Ctx512.H[0]:=UInt64($22312194fc2bf72c);
       Context.Ctx512.H[1]:=UInt64($9f555fa3c84c64c2);
       Context.Ctx512.H[2]:=UInt64($2393b86b6f53b151);
@@ -419,7 +419,7 @@ end;
 
 procedure SHA2Update(var Context:TSHA2Context; const buf; len:PtrUInt);
 begin
-  if Context.Version in [SHA224,SHA256] then
+  if Context.Version in [SHA2_224,SHA2_256] then
     SHA256Update(Context.Ctx256,buf,len)
   else
     SHA512Update(Context.Ctx512,buf,len);
@@ -433,7 +433,7 @@ begin
   Digest:=Default(TSHA2Digest);
   Digest.Version:=Context.Version;
   case Context.Version of
-    SHA224, SHA256:
+    SHA2_224, SHA2_256:
       begin
         MsgLen:=(Context.Ctx256.MsgLen+Context.Ctx256.BufLen)*8;
         MsgLen:=SwapEndian(MsgLen);
@@ -445,7 +445,7 @@ begin
         SHA256Update(Context.Ctx256,MsgLen,8);
         SwapDWords(@Context.Ctx256.H,@Digest.Datas,8);
       end;
-    SHA384, SHA512, SHA512_224, SHA512_256:
+    SHA2_384, SHA2_512, SHA2_512_224, SHA2_512_256:
       begin
         MsgLen:=(Context.Ctx512.MsgLen+Context.Ctx512.BufLen)*8;
         MsgLen:=SwapEndian(MsgLen);
@@ -474,9 +474,9 @@ var
 begin
   SHA2Init(ctx,version);
   case version of
-    SHA224, SHA256:
+    SHA2_224, SHA2_256:
       SHA256Update(ctx.Ctx256,buf,len);
-    SHA384, SHA512, SHA512_224, SHA512_256:
+    SHA2_384, SHA2_512, SHA2_512_224, SHA2_512_256:
       SHA512Update(ctx.Ctx512,buf,len);
   end;
   SHA2Final(ctx,Result);
@@ -496,7 +496,7 @@ begin
   Result:=Default(TSHA2Digest);
   ReadCount:=0;
   SHA2Update:=@SHA256Update;
-  if version in [SHA384, SHA512, SHA512_224, SHA512_256] then
+  if version in [SHA2_384, SHA2_512, SHA2_512_224, SHA2_512_256] then
     SHA2Update:=@SHA512Update;
   Assign(F,FileName);
   Reset(F,1);
@@ -532,7 +532,7 @@ begin
   Result:=Default(TSHA2Digest);
   ReadCount:=0;
   SHA2Update:=@SHA256Update;
-  if version in [SHA384, SHA512, SHA512_224, SHA512_256] then
+  if version in [SHA2_384, SHA2_512, SHA2_512_224, SHA2_512_256] then
     SHA2Update:=@SHA512Update;
   Assign(F,FileName);
   Reset(F,1);
@@ -558,7 +558,7 @@ function SHA2Print(const digest:TSHA2Digest; LowerCase:Boolean):String;
 const
   HexTableLower:array[0..15] of Char='0123456789abcdef';
   HexTableUpper:array[0..15] of Char='0123456789ABCDEF';
-  SHA2DigestLen:array[SHA224..SHA512_256] of Byte = (28, 32, 48, 64, 28, 32);
+  SHA2DigestLen:array[SHA2_224..SHA2_512_256] of Byte = (28, 32, 48, 64, 28, 32);
 var
   i,Len:Integer;
   p,ptbl:PChar;
@@ -581,7 +581,7 @@ end;
 
 function SHA2Match(const d1,d2:TSHA2Digest):Boolean;
 const
-  SHA2DigestDWords:Array[SHA224..SHA512_256] of Byte = (7, 8, 12, 16, 7, 8);
+  SHA2DigestDWords:Array[SHA2_224..SHA2_512_256] of Byte = (7, 8, 12, 16, 7, 8);
 var
   i:Integer;
 begin
@@ -847,6 +847,11 @@ end;
 class function TSHA2.HashString(const S:RawByteString; Version:TSHA2Version):TSHA2Digest;
 begin
   Result:=SHA2Buffer(S[1],Length(S),Version);
+end;
+
+class function TSHA2.HashFile(const FileName:String; Version:TSHA2Version):TSHA2Digest;
+begin
+  Result:=SHA2File(FileName,Version);
 end;
 
 end.

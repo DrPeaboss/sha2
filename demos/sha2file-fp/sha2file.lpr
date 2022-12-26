@@ -24,12 +24,12 @@ function Sha2VersionToString(v:TSHA2Version):String;
 begin
   Result:='';
   case v of
-    Sha224: Result:='SHA224';
-    Sha256: Result:='SHA256';
-    Sha384: Result:='SHA384';
-    Sha512: Result:='SHA512';
-    Sha512_224: Result:='SHA512/224';
-    Sha512_256: Result:='SHA512/256';
+    SHA2_224: Result:='SHA224';
+    SHA2_256: Result:='SHA256';
+    SHA2_384: Result:='SHA384';
+    SHA2_512: Result:='SHA512';
+    SHA2_512_224: Result:='SHA512/224';
+    SHA2_512_256: Result:='SHA512/256';
   end;
 end;
 
@@ -108,21 +108,21 @@ begin
           Exit;
         end
         else if param='all' then
-          FFlags:=[Sha224,Sha256,Sha384,Sha512,Sha512_224,Sha512_256]
+          FFlags:=[SHA2_224,SHA2_256,SHA2_384,SHA2_512,SHA2_512_224,SHA2_512_256]
         else if param='quiet' then
           FQuiet:=True
         else if param='sha224' then
-          Include(FFlags,Sha224)
+          Include(FFlags,SHA2_224)
         else if param='sha256' then
-          Include(FFlags,Sha256)
+          Include(FFlags,SHA2_256)
         else if param='sha384' then
-          Include(FFlags,Sha384)
+          Include(FFlags,SHA2_384)
         else if param='sha512' then
-          Include(FFlags,Sha512)
+          Include(FFlags,SHA2_512)
         else if param='sha512/224' then
-          Include(FFlags,Sha512_224)
+          Include(FFlags,SHA2_512_224)
         else if param='sha512/256' then
-          Include(FFlags,Sha512_256)
+          Include(FFlags,SHA2_512_256)
         else
         begin
           Writeln('Invalid parameter: ',arg,' at position ',index);
@@ -149,7 +149,7 @@ begin
               Writeln('Invalid parameter: ',arg,' at position ',index);
               Exit;
             end;
-            FFlags:=[Sha224,Sha256,Sha384,Sha512,Sha512_224,Sha512_256];
+            FFlags:=[SHA2_224,SHA2_256,SHA2_384,SHA2_512,SHA2_512_224,SHA2_512_256];
           end;
 
           'q':begin
@@ -164,17 +164,17 @@ begin
           's':begin
             param:=Copy(arg,3,Length(arg)-2);
             if param='224' then
-              Include(FFlags,Sha224)
+              Include(FFlags,SHA2_224)
             else if param='256' then
-              Include(FFlags,Sha256)
+              Include(FFlags,SHA2_256)
             else if param='384' then
-              Include(FFlags,Sha384)
+              Include(FFlags,SHA2_384)
             else if param='512' then
-              Include(FFlags,Sha512)
+              Include(FFlags,SHA2_512)
             else if param='524' then
-              Include(FFlags,Sha512_224)
+              Include(FFlags,SHA2_512_224)
             else if param='556' then
-              Include(FFlags,Sha512_256)
+              Include(FFlags,SHA2_512_256)
             else
             begin
               Writeln('Invalid parameter: ',arg,' at position ',index);
@@ -224,11 +224,11 @@ begin
     begin
       if Not FQuiet then
         Writeln('Hint: No options, use SHA256 default');
-      FFlags:=[Sha256];
+      FFlags:=[SHA2_256];
     end;
 {$Ifdef CPUX86}
-    if Not FQuiet and (FFLags*[Sha384,Sha512,Sha512_224,Sha512_256]<>[]) then
-      Writeln('Hint: Sha384, Sha512, Sha512/224 or Sha512/256 is slow for i386, use x64 instead');
+    if Not FQuiet and (FFLags*[SHA2_384,SHA2_512,SHA2_512_224,SHA2_512_256]<>[]) then
+      Writeln('Hint: SHA384, SHA512, SHA512/224 or SHA512/256 is slow for i386, use x64 instead');
 {$Endif}
     t1:=DateTimeToTimeStamp(Now);
     DoSha2;
@@ -244,7 +244,7 @@ end;
 procedure TSHA2File.WriteHelp;
 begin
   Writeln('Usage: ',ExtractFileName(ParamStr(0)),' [options] <FileName> [options]');
-  Writeln(' If only input FileName, use sha256 default');
+  Writeln(' If only input FileName, use SHA256 default');
   Writeln('  -s224, --sha224'#9'Add SHA224 output');
   Writeln('  -s256, --sha256'#9'Add SHA256 output');
   Writeln('  -s384, --sha384'#9'Add SHA384 output');

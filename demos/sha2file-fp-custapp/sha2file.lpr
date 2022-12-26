@@ -35,12 +35,12 @@ function Sha2VersionToString(v:TSha2Version):String;
 begin
   Result:='';
   case v of
-    Sha224: Result:='SHA224';
-    Sha256: Result:='SHA256';
-    Sha384: Result:='SHA384';
-    Sha512: Result:='SHA512';
-    Sha512_224: Result:='SHA512/224';
-    Sha512_256: Result:='SHA512/256';
+    SHA2_224: Result:='SHA224';
+    SHA2_256: Result:='SHA256';
+    SHA2_384: Result:='SHA384';
+    SHA2_512: Result:='SHA512';
+    SHA2_512_224: Result:='SHA512/224';
+    SHA2_512_256: Result:='SHA512/256';
   end;
 end;
 
@@ -132,31 +132,31 @@ begin
     end;
     if HasOption('a','all') then
     begin
-      FFlags:=[Sha224,Sha256,Sha384,Sha512,Sha512_224,Sha512_256]
+      FFlags:=[SHA2_224,SHA2_256,SHA2_384,SHA2_512,SHA2_512_224,SHA2_512_256]
     end else
     begin
       if HasOption('sha224') or HasOption('s224') then
-        Include(FFlags,sha224);
+        Include(FFlags,SHA2_224);
       if HasOption('sha256') or HasOption('s256') then
-        Include(FFlags,sha256);
+        Include(FFlags,SHA2_256);
       if HasOption('sha384') or HasOption('s384') then
-        Include(FFlags,Sha384);
+        Include(FFlags,SHA2_384);
       if HasOption('sha512') or HasOption('s512') then
-        Include(FFlags,Sha512);
+        Include(FFlags,SHA2_512);
       if HasOption('sha512/224') or HasOption('s524') then
-        Include(FFlags,Sha512_224);
+        Include(FFlags,SHA2_512_224);
       if HasOption('sha512/256') or HasOption('s556') then
-        Include(FFlags,Sha512_256);
+        Include(FFlags,SHA2_512_256);
       if FFlags=[] then
       begin
-        FFlags:=[sha256];
+        FFlags:=[SHA2_256];
         if not HasOption('q','quiet') then
           Writeln('Hint: No options, use SHA256 default');
       end;
     end;
 {$Ifdef CPUX86}
-    if not HasOption('q','quiet') and (FFlags * [sha384,sha512,sha512_224,sha512_256]<>[]) then
-      Writeln('Hint: SHA512 is slow for sha2file, if you need, use sha2file64 instead');
+    if not HasOption('q','quiet') and (FFlags * [SHA2_384,SHA2_512,SHA2_512_224,SHA2_512_256]<>[]) then
+      Writeln('Hint: SHA384, SHA512, SHA512/224 or SHA512/256 is slow for i386, use x64 instead');
 {$Endif}
     t1:=DateTimeToTimeStamp(Now);
     DoSha2;
@@ -184,7 +184,7 @@ end;
 procedure TSHA2File.WriteHelp;
 begin
   Writeln('Usage: ',ExtractFileName(ExeName),' [options] <FileName> [options]');
-  Writeln(' If only input FileName, use sha256 default');
+  Writeln(' If only input FileName, use SHA256 default');
   Writeln('  -s224, --sha224'#9'Add SHA224 output');
   Writeln('  -s256, --sha256'#9'Add SHA256 output');
   Writeln('  -s384, --sha384'#9'Add SHA384 output');
