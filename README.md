@@ -12,7 +12,9 @@ You can find SHA2 standard [here](https://csrc.nist.gov/publications/detail/fips
 
 - For delphi, this code's performance is better than codes in `System.Hash`.
 
-- The SHA256 part have specialized optimization assembler code for i386(basic instruction set).
+- The SHA256 part have specialized optimization assembler code for i386 and x86_64(basic instruction set).
+
+- The SHA512 part have specialized optimization assembler code for x86_64(basic instruction set).
 
 ## How to use
 
