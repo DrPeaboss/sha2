@@ -34,14 +34,6 @@ unit sha2;
   {$endif}
 {$endif}
 
-{$define PUREPAS} // Pure pascal, no assembler
-{$ifdef CPUX86}
-  {$UnDef PUREPAS}
-{$endif}
-{$ifdef CPUX64}
-  {$UnDef PUREPAS}
-{$endif}
-
 {$PointerMath On}
 
 interface
@@ -602,7 +594,11 @@ begin
   Result:=True;
 end;
 
-{$ifdef PUREPAS}
+{$if defined(CPUX86)}
+{$I sha256i386.inc}
+{$elseif defined(CPUX64)}
+{$I sha256x64.inc}
+{$else}
 procedure SHA256Compress(var Context:TSHA256Context);
 var
   A,B,C,D,E,F,G,H,T1,T2:LongWord;
@@ -643,14 +639,7 @@ begin
   Inc(Context.H[7],H);
   Inc(Context.MsgLen,64);
 end;
-{$else not PUREPAS}
-{$ifdef CPUX86}
-{$I sha256i386.inc}
 {$endif}
-{$ifdef CPUX64}
-{$I sha256x64.inc}
-{$endif}
-{$endif PUREPAS}
 
 procedure SHA256Update(var Context:TSHA256Context; const buf; len:PtrUInt);
 var
@@ -687,6 +676,9 @@ begin
   end;
 end;
 
+{$if defined(CPUX64)}
+{$I sha512x64.inc}
+{$else}
 procedure SHA512Compress(var Context:TSHA512Context);
 var
   A,B,C,D,E,F,G,H,T1,T2: UInt64;
@@ -727,6 +719,7 @@ begin
   Inc(Context.H[7],H);
   Inc(Context.MsgLen,128);
 end;
+{$endif}
 
 procedure SHA512Update(var Context:TSHA512Context; const buf; len:PtrUInt);
 var
