@@ -1,0 +1,53 @@
+object Form1: TForm1
+  Left = 400
+  Height = 523
+  Top = 200
+  Width = 631
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsSingle
+  Caption = 'SHA2 String'
+  ClientHeight = 523
+  ClientWidth = 631
+  Color = clBtnFace
+  Font.Color = clWindowText
+  Font.Height = -13
+  Font.Name = 'Tahoma'
+  OnCreate = FormCreate
+  object MemoInput: TMemo
+    Left = 8
+    Height = 137
+    Top = 8
+    Width = 617
+    OnChange = MemoInputChange
+    ScrollBars = ssVertical
+    TabOrder = 0
+  end
+  object MemoOutput: TMemo
+    Left = 8
+    Height = 341
+    Top = 174
+    Width = 617
+    ReadOnly = True
+    TabOrder = 1
+  end
+  object RadioButtonL: TRadioButton
+    Left = 16
+    Height = 23
+    Top = 151
+    Width = 87
+    Caption = 'LowerCase'
+    Checked = True
+    OnClick = RadioButtonLClick
+    TabOrder = 2
+    TabStop = True
+  end
+  object RadioButtonU: TRadioButton
+    Left = 143
+    Height = 23
+    Top = 151
+    Width = 86
+    Caption = 'UpperCase'
+    OnClick = RadioButtonUClick
+    TabOrder = 3
+  end
+end
