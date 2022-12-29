@@ -7,16 +7,12 @@ var
   W:Array[0..79] of UInt64;
 asm
   push rbx
-  push r10
-  push r11
   push r12
   push r14
   push r15
 {$ifdef MSWINDOWS}
   push rdi
   push rsi
-  push r8
-  push r9
   mov r15, rcx  // save the context
 {$endif}
 {$ifdef LINUX}
@@ -245,15 +241,11 @@ asm
   add qword ptr [r15+200], 128
 
 {$ifdef MSWINDOWS}
-  pop r9
-  pop r8
   pop rsi
   pop rdi
 {$endif}
   pop r15
   pop r14
   pop r12
-  pop r11
-  pop r10
   pop rbx
 end;
