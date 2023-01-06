@@ -1,6 +1,6 @@
 { SHA2 for fpc/delphi
 
-  Copyright (c) 2022 PeaZomboss
+  Copyright (c) 2022-2023 PeaZomboss
 
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to
@@ -53,9 +53,6 @@ type
   TSHA512Digest = array[0..63] of Byte;
 
   PSHA2Digest = ^TSHA2Digest;
-
-  { TSHA2Digest }
-
   TSHA2Digest = record
   public
     function ToString(LowerCase:Boolean=True):String;
@@ -123,8 +120,7 @@ procedure SHA2Update(var Context:TSHA2Context;const buf;len:PtrUInt);
 procedure SHA2Final(var Context:TSHA2Context;out Digest:TSHA2Digest);
 function SHA2String(const s:RawByteString;version:TSHA2Version):TSHA2Digest;
 function SHA2Buffer(const buf;len:PtrUInt;version:TSHA2Version):TSHA2Digest;
-function SHA2File(const FileName:RawByteString;version:TSHA2Version):TSHA2Digest;overload;
-function SHA2File(const FileName:UnicodeString;version:TSHA2Version):TSHA2Digest;overload;
+function SHA2File(const FileName:String;version:TSHA2Version):TSHA2Digest;
 function SHA2Print(const digest:TSHA2Digest;LowerCase:Boolean=True):String;
 function SHA2Match(const d1,d2:TSHA2Digest):Boolean;
 
@@ -482,7 +478,7 @@ begin
   SHA2Final(ctx,Result);
 end;
 
-function SHA2File(const FileName:RawByteString; version:TSHA2Version):TSHA2Digest;
+function SHA2File(const FileName:String; version:TSHA2Version):TSHA2Digest;
 type
   TSHA2UpdateProc = procedure(var ctx;const buf;len:Integer);
 var
@@ -510,42 +506,6 @@ begin
       BlockRead(F,buf^,FileBufSize,ReadCount);
       if ReadCount>0 then
         SHA2Update(Context,buf^,ReadCount);
-    until ReadCount<FileBufSize;
-    SHA2Final(Context,Result);
-    Freemem(buf);
-    Close(F);
-  end;
-  FileMode:=fm;
-end;
-
-function SHA2File(const FileName:UnicodeString; version:TSHA2Version):TSHA2Digest;
-type
-  TSHA2UpdateProc = procedure(ctx:Pointer;const buf;len:Integer);
-var
-  F:File;
-  fm:Byte;
-  buf:Pointer;
-  ReadCount:Integer;
-  Context:TSHA2Context;
-  SHA2Update:TSHA2UpdateProc;
-begin
-  Result:=Default(TSHA2Digest);
-  ReadCount:=0;
-  SHA2Update:=@SHA256Update;
-  if version in [SHA2_384, SHA2_512, SHA2_512_224, SHA2_512_256] then
-    SHA2Update:=@SHA512Update;
-  Assign(F,FileName);
-  Reset(F,1);
-  fm:=FileMode;
-  FileMode:=0;
-  if IOResult=0 then
-  begin
-    GetMem(buf,FileBufSize);
-    SHA2Init(Context,version);
-    repeat
-      BlockRead(F,buf^,FileBufSize,ReadCount);
-      if ReadCount>0 then
-        SHA2Update(@Context,buf^,ReadCount);
     until ReadCount<FileBufSize;
     SHA2Final(Context,Result);
     Freemem(buf);
