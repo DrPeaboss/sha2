@@ -35,6 +35,8 @@ unit sha2;
 
 {$PointerMath On}
 
+{ $define PUREPAS} // Or use -dPUREPAS to use pure pascal code
+
 interface
 
 type
@@ -554,9 +556,9 @@ begin
   Result:=True;
 end;
 
-{$if defined(CPUX86)}
+{$if not defined(PUREPAS) and defined(CPUX86)}
 {$I sha256i386.inc}
-{$elseif defined(CPUX64)}
+{$elseif not defined(PUREPAS) and defined(CPUX64)}
 {$I sha256x64.inc}
 {$else}
 procedure SHA256Compress(var Context:TSHA256Context);
@@ -636,7 +638,7 @@ begin
   end;
 end;
 
-{$if defined(CPUX64)}
+{$if not defined(PUREPAS) and defined(CPUX64)}
 {$I sha512x64.inc}
 {$else}
 procedure SHA512Compress(var Context:TSHA512Context);
