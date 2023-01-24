@@ -5,7 +5,7 @@ uses
   sha2;
 
 const
-  BUFSIZE = 1024*1024*512;
+  BUFSIZE = 1024*1024*1024;
 
 var
   ms:TMemoryStream;
@@ -18,19 +18,21 @@ begin
 
   Writeln('Buffer size is ',BUFSIZE,' bytes (',BUFSIZE div (1024*1024),' MiB)');
 
-  // 08bb5ac4e56c52caeaae8a376628afd19a71296242f8fac36cd0ed14a6194e1d
+  // 4eb29e7b79c0ad1e578803c357b47d9cdfc1a9c23b293bf1ca4f9d81d08bfadf
   t:=GetTickCount64;
   res:=Sha2Buffer(ms.Memory^,ms.Size,SHA2_256);
   t:=GetTickCount64-t;
   Writeln('SHA256 result: ',res.ToString());
   Writeln('SHA256 use ',t,' ms');
+  Writeln('SHA256 speed: ',BUFSIZE/1024/1024/(t/1000):2:2,' MiB/s');
 
-  // 918c1509a27b66728889a6fe29c002939435c3606e3d5a6b0f4c639eaa0b2193ba8b429c57650b42f75afa23db00b5fea95cb26eb55945f70ee0ac59445eca17
+  // 9eb37ab793089030761a888a130690300028fcb03bffe9fac218a62a7db541c0026bb79548c06842307b73f9d06eee8df78b4c00ac2de6a06666963dbc1ef966
   t:=GetTickCount64;
   res:=Sha2Buffer(ms.Memory^,ms.Size,SHA2_512);
   t:=GetTickCount64-t;
   Writeln('SHA512 result: ',res.ToString());
   Writeln('SHA512 use ',t,' ms');
+  Writeln('SHA512 speed: ',BUFSIZE/1024/1024/(t/1000):2:2,' MiB/s');
 
   ms.Free;
   Readln;
