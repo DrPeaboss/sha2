@@ -14,14 +14,13 @@ asm
   push rdi
   push rsi
   mov r15, rcx  // save the context
-{$endif}
-{$ifdef LINUX}
+{$else}
   mov r15, rdi  // save the context
 {$endif}
   mov rax, PK256  // must use rax
   mov r14, rax
   // swap
-  mov edi, [r15+32]
+  mov edi, [r15+32]  // W[0]
   bswap edi
   mov dword ptr W[0], edi
   mov eax, [r15+36]
@@ -228,7 +227,6 @@ asm
   //Inc(Context.H[5],F);
   //Inc(Context.H[6],G);
   //Inc(Context.H[7],H);
-  //Inc(Context.MsgLen,64);
   add [r15], eax
   add [r15+4], ebx
   add [r15+8], ecx
@@ -238,8 +236,7 @@ asm
   add [r15+24], r8d
   add [r15+28], r9d
   //Inc(Context.MsgLen,64);
-  add dword ptr [r15+104], 64
-  adc dword ptr [r15+108], 0
+  add qword ptr [r15+104], 64
 
 {$ifdef MSWINDOWS}
   pop rsi

@@ -14,8 +14,7 @@ asm
   push rdi
   push rsi
   mov r15, rcx  // save the context
-{$endif}
-{$ifdef LINUX}
+{$else}
   mov r15, rdi  // save the context
 {$endif}
   mov rax, PK512  // must use rax
@@ -228,7 +227,6 @@ asm
   //Inc(Context.H[5],F);
   //Inc(Context.H[6],G);
   //Inc(Context.H[7],H);
-  //Inc(Context.MsgLen,128);
   add [r15], rax
   add [r15+8], rbx
   add [r15+16], rcx
