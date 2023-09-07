@@ -282,11 +282,6 @@ asm
   //Inc(Context.H[7],H);
   add [edi+28], ecx
 
-@UpdateMsgLen:
-  //Inc(Context.MsgLen,64);
-  add dword ptr [edi+104], 64
-  adc dword ptr [edi+108], 0
-
 @out:
   add esp, 280
   pop esi

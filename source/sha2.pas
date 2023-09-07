@@ -599,7 +599,6 @@ begin
   Inc(Context.H[5],F);
   Inc(Context.H[6],G);
   Inc(Context.H[7],H);
-  Inc(Context.MsgLen,64);
 end;
 {$endif}
 
@@ -609,6 +608,7 @@ var
   N:PtrUInt;
 begin
   p:=@buf;
+  Inc(Context.MsgLen,len);
   if Context.BufLen>0 then
   begin
     N:=64-Context.BufLen;
@@ -679,7 +679,6 @@ begin
   Inc(Context.H[5],F);
   Inc(Context.H[6],G);
   Inc(Context.H[7],H);
-  Inc(Context.MsgLen,128);
 end;
 {$endif}
 
@@ -689,6 +688,7 @@ var
   N:PtrUInt;
 begin
   p:=@buf;
+  Inc(Context.MsgLen,len);
   if Context.BufLen>0 then
   begin
     N:=128-Context.BufLen;

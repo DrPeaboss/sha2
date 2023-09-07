@@ -235,8 +235,6 @@ asm
   add [r15+40], rsi
   add [r15+48], r8
   add [r15+56], r9
-  //Inc(Context.MsgLen,128);
-  add qword ptr [r15+200], 128
 
 {$ifdef MSWINDOWS}
   pop rsi
