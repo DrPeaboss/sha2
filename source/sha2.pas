@@ -561,6 +561,50 @@ end;
 {$elseif not defined(PUREPAS) and defined(CPUX64)}
 {$I sha256x64.inc}
 {$else}
+{$if defined(FPC) and defined(VER3_3) and defined(CPUX86)}
+procedure SHA256Compress(var Context:TSHA256Context);
+var
+  A,B,C,D,E,F,G,H,T:LongWord;
+  W:array[0..63] of LongWord;
+  i:Integer;
+  P:PLongWord;
+begin
+  SwapDWords(@Context.Buffer,@W[0],16);
+  for i:=16 to 63 do
+    W[i]:=LowerSigma1(W[i-2])+W[i-7]+LowerSigma0(W[i-15])+W[i-16];
+  P:=@Context.H;
+  A:=P[0];
+  B:=P[1];
+  C:=P[2];
+  D:=P[3];
+  E:=P[4];
+  F:=P[5];
+  G:=P[6];
+  H:=P[7];
+  for i:=0 to 63 do
+  begin
+    T:=H+UpperSigma1(E)+Ch(E,F,G)+K256[i]+W[i];
+    H:=G;
+    G:=F;
+    F:=E;
+    E:=D+T;
+    T:=T+UpperSigma0(A)+Maj(A,B,C);
+    D:=C;
+    C:=B;
+    B:=A;
+    A:=T;
+  end;
+  P:=@Context.H;
+  Inc(P[0],A);
+  Inc(P[1],B);
+  Inc(P[2],C);
+  Inc(P[3],D);
+  Inc(P[4],E);
+  Inc(P[5],F);
+  Inc(P[6],G);
+  Inc(P[7],H);
+end;
+{$else}
 procedure SHA256Compress(var Context:TSHA256Context);
 var
   A,B,C,D,E,F,G,H,T1,T2:LongWord;
@@ -600,6 +644,7 @@ begin
   Inc(Context.H[6],G);
   Inc(Context.H[7],H);
 end;
+{$endif}
 {$endif}
 
 procedure SHA256Update(var Context:TSHA256Context; const buf; len:PtrUInt);
