@@ -17,8 +17,7 @@ asm
 {$else}
   mov r15, rdi  // save the context
 {$endif}
-  mov rax, PK512  // must use rax
-  mov r14, rax
+  mov r14, [rip+PK512]
   // swap
   mov rdi, [r15+64] // W[0]
   bswap rdi

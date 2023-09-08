@@ -556,9 +556,9 @@ begin
   Result:=True;
 end;
 
-{$if not defined(PUREPAS) and defined(CPUX86) and defined(MSWINDOWS)}
+{$if not defined(PUREPAS) and defined(CPUX86)}
 {$I sha256i386.inc}
-{$elseif not defined(PUREPAS) and defined(CPUX64) and defined(MSWINDOWS)}
+{$elseif not defined(PUREPAS) and defined(CPUX64)}
 {$I sha256x64.inc}
 {$else}
 {$if defined(FPC) and defined(VER3_3) and defined(CPUX86)}
@@ -683,7 +683,7 @@ begin
   end;
 end;
 
-{$if not defined(PUREPAS) and defined(CPUX64) and defined(MSWINDOWS)}
+{$if not defined(PUREPAS) and defined(CPUX64)}
 {$I sha512x64.inc}
 {$else}
 procedure SHA512Compress(var Context:TSHA512Context);
