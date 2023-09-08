@@ -14,7 +14,7 @@ asm
   push ebx
   push edi
   push esi
-  sub esp, 280
+  lea esp, [esp-280]
   mov [esp], eax    // Save context
 
 @swap:
@@ -283,7 +283,7 @@ asm
   add [edi+28], ecx
 
 @out:
-  add esp, 280
+  lea esp, [esp+280]
   pop esi
   pop edi
   pop ebx
